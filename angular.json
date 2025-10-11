@@ -6,6 +6,19 @@
     "analytics": "43f47957-fa58-4c92-a315-f3de2e541b9d"
   },
   "newProjectRoot": "projects",
+  "schematics": {
+    "@schematics/angular:component": {
+      "skipTests": true,
+      "standalone": true
+    },
+    "@schematics/angular:guard": {
+      "functional": false,
+      "skipTests": true
+    },
+    "@schematics/angular:interceptor": {
+      "skipTests": true
+    }
+  },
   "projects": {
     "Portal-emergencias": {
       "projectType": "application",
