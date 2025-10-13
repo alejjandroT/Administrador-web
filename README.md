@@ -1,59 +1,187 @@
-# PortalEmergencias
+# 🧯 Portal de Emergencias — Frontend (Angular)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.15.
+Aplicación **Angular (standalone)** para la gestión de brigadistas, ubicaciones y exportación de códigos QR.  
+Incluye autenticación JWT, guards, interceptores HTTP y arquitectura escalable siguiendo principios **SOLID**.
 
-## Development server
+---
 
-To start a local development server, run:
+## 🚀 Tecnologías principales
 
-```bash
-ng serve
-```
+- **Angular 19+** (Standalone Components)
+- **RxJS** y Signals API
+- **TypeScript**
+- **JWT Authentication**
+- **Modales y formularios reactivos**
+- **Generación y descarga de QR** con `qrcode`, `jszip` y `file-saver`
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## ⚙️ Requisitos previos
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Node.js **20+**
+- **pnpm** (instálalo si no lo tienes: `npm install -g pnpm`)
+- Angular CLI **19+**
+- Backend del proyecto (`.NET API`) en ejecución local (por defecto `http://localhost:5217/api`)
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🧩 Instalación
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Clona el repositorio y ejecuta:
 
 ```bash
-ng test
-```
+pnpm install
+Si ocurre algún error de dependencias:
 
-## Running end-to-end tests
+bash
+Copy code
+pnpm install --legacy-peer-deps
+🌐 Configuración del entorno
+Edita el archivo:
 
-For end-to-end (e2e) testing, run:
+ts
+Copy code
+// src/environments/environment.ts
+export const environment = {
+  production: false,
+  apiBase: 'http://localhost:5217/api' // URL de tu backend local
+};
+🔒 Autenticación JWT
+Login: POST /api/admin/auth/login
+Retorna un token JWT que se guarda en localStorage.
 
-```bash
-ng e2e
-```
+AuthInterceptor: agrega Authorization: Bearer <token> a todas las peticiones.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+AuthGuard: protege rutas del dashboard y redirige a /login si no hay sesión activa.
 
-## Additional Resources
+🛠️ Scripts
+Comando	Descripción
+pnpm start	Inicia el servidor local en http://localhost:4200
+pnpm run build	Genera el build de producción (dist/)
+pnpm run lint	Ejecuta análisis de código (opcional)
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+🧱 Estructura del Proyecto
+bash
+Copy code
+portal-emergencias/
+├── src/
+│   ├── app/
+│   │   ├── app.component.*         # Shell principal
+│   │   ├── app.routes.ts           # Definición de rutas
+│   │   ├── app.config.ts           # Providers globales (router, http, animations)
+│   │   ├── core/
+│   │   │   ├── auth/
+│   │   │   │   ├── auth.service.ts
+│   │   │   │   ├── auth.guard.ts
+│   │   │   │   ├── roles.guard.ts
+│   │   │   │   ├── auth.tokens.ts
+│   │   │   ├── interceptors/
+│   │   │   │   ├── auth.interceptor.ts
+│   │   │   │   ├── error.interceptor.ts
+│   │   │   └── services/
+│   │   │       ├── brigadistas.service.ts
+│   │   │       └── ubicaciones.service.ts
+│   │   ├── features/
+│   │   │   ├── auth/login/
+│   │   │   │   ├── login.component.ts / html / css
+│   │   │   ├── layout/admin-shell/
+│   │   │   │   ├── admin-shell.component.ts / html / css
+│   │   │   ├── dashboard/dashboard/
+│   │   │   │   ├── dashboard.component.ts / html / css
+│   │   │   ├── brigadistas/brigadistas/
+│   │   │   │   ├── brigadistas.component.ts / html / css
+│   │   │   ├── ubicaciones/ubicaciones/
+│   │   │   │   ├── ubicaciones.component.ts / html / css
+│   │   │   ├── qr/exportar-qr/
+│   │   │   │   ├── exportar-qr.component.ts / html / css
+│   │   └── shared/components/toast-container/
+│   │       ├── toast-container.component.ts / html / css
+│   │       └── toast.service.ts
+├── angular.json
+├── package.json
+├── tsconfig.json
+├── .gitignore
+└── README.md
+🔍 Funcionalidades principales
+👨‍🚒 Brigadistas
+Listado general con búsqueda dinámica.
+
+Crear / editar brigadista mediante modales flotantes.
+
+Validaciones de formulario en tiempo real.
+
+Eliminar con confirmación.
+
+📍 Ubicaciones
+CRUD completo (crear, editar, eliminar).
+
+Búsqueda por nombre o código.
+
+Interfaz unificada con señales (signals).
+
+🧾 Exportar QR
+Generación de QR individuales o masivos.
+
+Descarga en formato .zip.
+
+Integración con qrcode, jszip, file-saver.
+
+🎨 UI y Animaciones
+Diseño minimalista y responsivo con CSS puro.
+
+Animaciones suaves con Angular @angular/animations.
+
+Modales centrados con backdrop translúcido.
+
+Colores institucionales (azul Unimayor).
+
+🧰 Interceptores
+Interceptor	Función
+AuthInterceptor	Añade el header Authorization con el token JWT
+ErrorInterceptor	Maneja errores globales (401 → logout y redirección a login)
+
+🧑‍💻 Desarrollo y contribución
+Crea una nueva rama:
+
+bash
+Copy code
+git checkout -b feat/nueva-funcionalidad
+Haz tus cambios y commitea con convención clara:
+
+bash
+Copy code
+git commit -m "feat(brigadistas): agrega modales y validaciones"
+Sube los cambios:
+
+bash
+Copy code
+git push origin feat/nueva-funcionalidad
+Abre un Pull Request hacia main.
+
+🧠 Buenas prácticas implementadas
+Arquitectura modular y escalable.
+
+Principios SOLID.
+
+Separación de responsabilidades (Core / Features / Shared).
+
+Tipado fuerte con TypeScript.
+
+Reactive Forms + Signals.
+
+*Uso de trackById en ngFor para optimizar renders.
+
+🧪 Troubleshooting
+Problema	Solución
+Pantalla en blanco	Revisa app.routes.ts y que provideRouter(routes) esté configurado
+Error API_URL	Asegúrate que API_URL se provee en app.config.ts
+Error @angular/animations	Instala: pnpm add @angular/animations
+Error CORS	Configura proxy o habilita CORS en backend
+
+📄 Licencia
+MIT © 2025 — Desarrollado por Luis Alejandro
+Proyecto académico para el colegio mayor del cauca.
+
+💬 Contacto
+📧 luis.alejandro.dev@gmail.com
+🐙 GitHub: @alejjandro
