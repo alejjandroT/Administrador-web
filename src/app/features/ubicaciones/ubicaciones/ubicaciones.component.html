@@ -1,1 +1,75 @@
-<p>ubicaciones works!</p>
+<!-- Botón para abrir -->
+<button class="btn" (click)="abrirCrear()">+ Nueva ubicación</button>
+
+<!-- Buscador -->
+<div class="search-row">
+  <input
+    type="text"
+    placeholder="Buscar por nombre o código..."
+    (input)="onSearch($event)"
+  />
+</div>
+
+<!-- Tabla -->
+<table class="table">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Código</th>
+      <th>Descripción</th>
+      <th style="width: 160px;">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let u of filtrados(); trackBy: trackById">
+      <td>{{ u.nombre }}</td>
+      <td>{{ u.codigo }}</td>
+      <td>{{ u.descripcion }}</td>
+      <td>
+        <button class="btn-sm" (click)="abrirEditar(u)">Editar</button>
+        <button class="btn-sm danger" (click)="eliminar(u)">Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div
+  class="modal-backdrop"
+  [class.open]="creando() || !!editando()"
+  (click)="cerrarModal()"
+>
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">
+      {{ editando() ? 'Editar ubicación' : 'Nueva ubicación' }}
+    </h3>
+
+    <form
+      [formGroup]="editando() ? formEditar : formCrear"
+      (ngSubmit)="editando() ? actualizar() : crear()"
+      class="modal-form"
+    >
+      <div class="form-row">
+        <label>Nombre</label>
+        <input type="text" formControlName="nombre">
+      </div>
+
+      <div class="form-row">
+        <label>Código</label>
+        <input type="text" formControlName="codigo">
+      </div>
+
+      <div class="form-row">
+        <label>Descripción</label>
+        <textarea rows="3" formControlName="descripcion"></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn ghost" (click)="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn primary">
+          {{ editando() ? 'Actualizar' : 'Crear' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

@@ -1,1 +1,73 @@
-<p>exportar-qr works!</p>
+<div class="qr-page">
+
+  <header class="qr-header">
+    <h2>Exportar QR de Ubicaciones</h2>
+    <div class="actions">
+      <input
+        type="text"
+        class="search"
+        placeholder="Buscar por nombre o código..."
+        (input)="onSearch($event)"
+      />
+
+      <button class="btn ghost" (click)="limpiarSeleccionMultiple()">
+        Limpiar selección
+      </button>
+
+      <button class="btn primary" (click)="downloadZipBtn.click()" [disabled]="!seleccionados().size">
+        Descargar ZIP ({{ seleccionados().size }})
+      </button>
+      
+      <button #downloadZipBtn style="display:none" (click)="descargarZip()"></button>
+    </div>
+  </header>
+
+  <section class="qr-body">
+    <div class="list">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="width:36px;"></th>
+            <th>Nombre</th>
+            <th>Código</th>
+            <th style="width:140px;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of filtradas(); trackBy: trackById">
+            <td>
+              <input type="checkbox" [checked]="estaSeleccionado(u)" (change)="toggleSeleccion(u, $event)">
+            </td>
+            <td>{{ u.nombre }}</td>
+            <td><code>{{ u.codigo }}</code></td>
+            <td>
+              <button class="btn" (click)="seleccionar(u)">Previsualizar</button>
+            </td>
+          </tr>
+          <tr *ngIf="!filtradas().length && !cargando()">
+            <td colspan="4" class="empty">Sin resultados</td>
+          </tr>
+          <tr *ngIf="cargando()">
+            <td colspan="4" class="empty">Cargando...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="preview" *ngIf="seleccionada() as sel">
+      <h3>Previsualización</h3>
+      <p class="meta">
+        <strong>{{ sel.nombre }}</strong> — <code>{{ sel.codigo }}</code>
+      </p>
+      <canvas #qrCanvas width="256" height="256" class="qr-canvas"></canvas>
+
+      <div class="preview-actions">
+        <button class="btn primary" (click)="descargarPNG()">Descargar PNG</button>
+      </div>
+    </div>
+
+    <div class="preview muted" *ngIf="!seleccionada()">
+      <p>Selecciona una ubicación para previsualizar su QR.</p>
+    </div>
+  </section>
+</div>

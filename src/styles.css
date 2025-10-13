@@ -1,1 +1,34 @@
-/* You can add global styles to this file, and also import other style files */
+/* === Variables y reset suaves === */
+:root{
+  --bg: #eef3f7;
+  --card: #ffffff;
+  --sidebar: #0f2f47;          /* azul oscuro */
+  --sidebar-2: #103752;
+  --accent: #0a5fa8;           /* azul marca */
+  --accent-2: #084c86;
+  --text: #0b1c2c;
+  --muted: #7c8a99;
+  --ring: rgba(16, 55, 82, .12);
+}
+
+*{ box-sizing: border-box; }
+html, body { height: 100%; }
+body{
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Helvetica Neue", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol", sans-serif;
+  color: var(--text);
+  background: radial-gradient(1200px 600px at 80% -200px, #ffffff 0, var(--bg) 55%, #e7edf3 100%);
+}
+
+/* Utilidades pequeñas que puedes reutilizar */
+.card{
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px var(--ring);
+}
+.btn{
+  appearance: none; border: 0; outline: 0;
+  padding: 10px 14px; border-radius: 10px;
+  background: var(--accent); color: #fff; font-weight: 600; cursor: pointer;
+}
+.btn:hover{ background: var(--accent-2); }

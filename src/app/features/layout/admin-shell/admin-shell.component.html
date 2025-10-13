@@ -1,1 +1,42 @@
-<p>admin-shell works!</p>
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">🏛️</div>
+      <div class="brand-text">
+        <div class="brand-title">ADMIN</div>
+        <div class="brand-sub">DASHBOARD</div>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/dashboard/brigadistas" routerLinkActive="active" class="menu-item">
+        <span class="mi">👤</span>
+        <span>Brigadistas</span>
+      </a>
+
+      <a routerLink="/dashboard/ubicaciones" routerLinkActive="active" class="menu-item">
+        <span class="mi">🗂️</span>
+        <span>Ubicaciones</span>
+      </a>
+
+      <a routerLink="/dashboard/qr" routerLinkActive="active" class="menu-item">
+        <span class="mi">🔳</span>
+        <span>Exportar QR</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button type="button" class="btn-outline" routerLink="/login">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="content">
+    <!-- TOASTS GLOBALES -->
+    <app-toast-container></app-toast-container>
+
+    
+    <router-outlet></router-outlet>
+  </main>
+</div>

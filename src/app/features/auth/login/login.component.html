@@ -1,1 +1,67 @@
-<p>login works!</p>
+<div class="login-wrapper">
+  <div class="login-card card">
+    <!-- Panel izquierdo -->
+    <div class="left">
+      <img class="logo" src="LogoUnimayor.jpg" alt="Institución educativa" />
+      <h2 class="brand">INSTITUCIÓN<br/>EDUCATIVA</h2>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Panel derecho -->
+    <div class="right">
+      <h1 class="title">Bienvenido, Administrador</h1>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <!-- Usuario -->
+        <label class="label" for="Correo">Usuario</label>
+        <div class="input-group" [class.invalid]="f['Correo'].touched && f['Correo'].invalid">
+          <span class="icon">👤</span>
+          <input
+            id="Correo"
+            type="email"
+            placeholder="Usuario"
+            formControlName="Correo"
+            autocomplete="username"
+          />
+        </div>
+        <div class="hint" *ngIf="f['Correo'].touched && f['Correo'].hasError('required')">El correo es obligatorio.</div>
+        <div class="hint" *ngIf="f['Correo'].touched && f['Correo'].hasError('email')">Formato de correo inválido.</div>
+
+        <!-- Contraseña -->
+        <label class="label" for="Contrasena">Contraseña</label>
+        <div class="input-group" [class.invalid]="f['Contrasena'].touched && f['Contrasena'].invalid">
+          <span class="icon">🔒</span>
+          <input
+            id="Contrasena"
+            [type]="show ? 'text' : 'password'"
+            placeholder="Contraseña"
+            formControlName="Contrasena"
+            autocomplete="current-password"
+          />
+          <button type="button" class="eye" (click)="show = !show" aria-label="Mostrar u ocultar contraseña">
+            {{ show ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        <div class="hint" *ngIf="f['Contrasena'].touched && f['Contrasena'].hasError('required')">La contraseña es obligatoria.</div>
+
+        <!-- Botón -->
+        <button class="btn primary" type="submit" [disabled]="loginForm.invalid || loading">
+          {{ loading ? 'Ingresando…' : 'Iniciar sesión' }}
+        </button>
+
+        <!-- Enlaces -->
+        <div class="links">
+          <a href="#" (click)="$event.preventDefault()">¿Olvidaste tu contraseña?</a>
+          <a href="#" (click)="$event.preventDefault()">Solicitar acceso</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Soporte -->
+    <button class="support" type="button">Soporte</button>
+  </div>
+</div>
+
+<!-- Error global -->
+<div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>

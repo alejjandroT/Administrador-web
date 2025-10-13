@@ -1,0 +1,104 @@
+/* Contenedor general centrado */
+.login-wrapper{
+  min-height: calc(100vh - 48px);
+  padding: 24px;
+  display: grid;
+  place-items: center;
+}
+
+/* Tarjeta principal */
+.login-card{
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1px 1.2fr;
+  gap: 28px;
+  width: min(1040px, 92vw);
+  padding: 40px 32px;
+}
+
+/* División vertical */
+.divider{
+  width: 1px; background: rgba(0,0,0,.06);
+}
+
+/* Panel izquierdo (logo + marca) */
+.left{
+  display: grid;
+  place-items: center;
+  padding: 12px;
+}
+.logo{
+  width: clamp(120px, 30vw, 220px);
+  filter: drop-shadow(0 6px 20px var(--ring));
+  margin-bottom: 14px;
+}
+.brand{
+  text-align: center;
+  color: var(--sidebar);
+  letter-spacing: .6px;
+  margin: 0;
+  line-height: 1.15;
+  font-weight: 900;
+}
+
+/* Panel derecho (formulario) */
+.right{ padding: 8px 8px 8px 0; }
+.title{
+  margin: 0 0 18px;
+  font-size: clamp(22px, 2.4vw, 28px);
+  color: var(--text);
+}
+
+/* Campos */
+.label{ display:block; font-weight: 700; margin: 14px 0 6px; color: var(--text); }
+.input-group{
+  display: grid; grid-template-columns: 36px 1fr auto; align-items: center;
+  border: 2px solid #edc24d;            /* borde dorado */
+  border-radius: 10px; background: #fff;
+  padding: 0 10px 0 0;
+  box-shadow: 0 6px 16px var(--ring);
+}
+.input-group.invalid{ border-color: #e35b5b; }
+.icon{ display:grid; place-items:center; opacity: .7; padding-left: 8px; }
+.input-group input{
+  border: 0; outline: 0; padding: 12px 10px; font-size: 16px; background: transparent;
+}
+.eye{ border:0; background: transparent; cursor: pointer; padding: 6px 4px; }
+
+/* Botón principal */
+.btn.primary{
+  margin-top: 16px; width: 100%;
+  background: var(--accent); color: #fff; font-weight: 800;
+  padding: 12px 16px; border-radius: 10px; border: 0; cursor: pointer;
+  box-shadow: 0 8px 18px var(--ring);
+}
+.btn.primary:hover{ background: var(--accent-2); }
+.btn.primary:disabled{ opacity: .6; cursor: not-allowed; }
+
+/* Enlaces bajo el botón */
+.links{
+  display:flex; gap: 22px; margin-top: 12px;
+}
+.links a{ color: var(--accent-2); text-decoration: underline; }
+
+/* Botón soporte (naranja) */
+.support{
+  position: absolute; right: 24px; bottom: 20px;
+  background: #d86d2d; color: #fff; border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 8px 18px var(--ring);
+}
+.support:hover{ filter: brightness(.96); }
+
+/* Error global */
+.error{
+  margin-top: 12px; text-align: center;
+  color: #b23b3b; font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 920px){
+  .login-card{ grid-template-columns: 1fr; gap: 18px; }
+  .divider{ display:none; }
+  .left{ padding-bottom: 0; }
+  .brand{ font-size: 22px; }
+}

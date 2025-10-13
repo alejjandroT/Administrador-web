@@ -1,1 +1,6 @@
-<p>toast-container works!</p>
+<div class="toast-wrapper">
+  <div *ngFor="let t of toasts" class="toast" [class]="t.type">
+    <div class="msg">{{ t.message }}</div>
+    <button class="close" (click)="close(t.id)">×</button>
+  </div>
+</div>
