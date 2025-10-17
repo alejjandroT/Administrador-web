@@ -17,7 +17,7 @@
       <th>Nombre</th>
       <th>Código</th>
       <th>Descripción</th>
-      <th style="width: 160px">Acciones</th>
+      <th style="width: 160px;">Acciones</th>
     </tr>
   </thead>
   <tbody>
@@ -40,7 +40,7 @@
 >
   <div class="modal" (click)="$event.stopPropagation()">
     <h3 class="modal-title">
-      {{ editando() ? "Editar ubicación" : "Nueva ubicación" }}
+      {{ editando() ? 'Editar ubicación' : 'Nueva ubicación' }}
     </h3>
 
     <form
@@ -50,12 +50,12 @@
     >
       <div class="form-row">
         <label>Nombre</label>
-        <input type="text" formControlName="nombre" />
+        <input type="text" formControlName="nombre">
       </div>
 
       <div class="form-row">
         <label>Código</label>
-        <input type="text" formControlName="codigo" />
+        <input type="text" formControlName="codigo">
       </div>
 
       <div class="form-row">
@@ -64,13 +64,12 @@
       </div>
 
       <div class="actions">
-        <button type="button" class="btn ghost" (click)="cerrarModal()">
-          Cancelar
-        </button>
+        <button type="button" class="btn ghost" (click)="cerrarModal()">Cancelar</button>
         <button type="submit" class="btn primary">
-          {{ editando() ? "Actualizar" : "Crear" }}
+          {{ editando() ? 'Actualizar' : 'Crear' }}
         </button>
       </div>
     </form>
   </div>
 </div>
+

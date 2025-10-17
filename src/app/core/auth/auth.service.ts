@@ -18,13 +18,20 @@ export class AuthService {
   }
 
   login(dto: LoginDto): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.base}/login`, dto).pipe(
-      tap((res) => {
-        if (res?.token) {
-          localStorage.setItem(AUTH_TOKEN_KEY, res.token);
-        }
-      })
-    );
+    const loginFields = {
+      correo: dto.Correo,
+      contraseña: dto.Contrasena,
+    };
+
+    return this.http
+      .post<{ token: string }>(`${this.base}/login`, loginFields)
+      .pipe(
+        tap((res) => {
+          if (res?.token) {
+            localStorage.setItem(AUTH_TOKEN_KEY, res.token);
+          }
+        })
+      );
   }
 
   getToken(): string | null {
@@ -92,7 +99,6 @@ export class AuthService {
     if (roles.some((r) => String(r || '').toLowerCase() === normalized))
       return true;
 
-    
     if (normalized === 'admin') {
       return !!(
         p.EsAdmin === true ||

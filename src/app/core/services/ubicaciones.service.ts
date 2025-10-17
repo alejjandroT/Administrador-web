@@ -7,10 +7,7 @@ import { Observable } from 'rxjs';
 export class UbicacionesService {
   private base: string;
 
-  constructor(
-    private http: HttpClient,
-    @Inject(API_URL) private api: string
-  ) {
+  constructor(private http: HttpClient, @Inject(API_URL) private api: string) {
     this.base = `${this.api}/admin/ubicaciones`;
   }
 

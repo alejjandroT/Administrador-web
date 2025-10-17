@@ -29,11 +29,10 @@ export class UbicacionesComponent implements OnInit {
   filtrados = computed(() => {
     const term = this.q().trim().toLowerCase();
     if (!term) return this.lista();
-    return this.lista().filter((u) =>
-      [u.sede, u.edificio, u.lugar, u.piso, u.descripcion]
-        .join(' ')
-        .toLowerCase()
-        .includes(term)
+    return this.lista().filter(
+      (u) =>
+        (u.nombre ?? '').toLowerCase().includes(term) ||
+        (u.codigo ?? '').toLowerCase().includes(term)
     );
   });
 
@@ -43,18 +42,14 @@ export class UbicacionesComponent implements OnInit {
     private toast: ToastService
   ) {
     this.formCrear = this.fb.group({
-      sede: ['', Validators.required],
-      edificio: ['', Validators.required],
-      piso: ['', Validators.required],
-      lugar: ['', Validators.required],
+      nombre: ['', Validators.required],
+      codigo: ['', Validators.required],
       descripcion: [''],
     });
 
     this.formEditar = this.fb.group({
-      sede: ['', Validators.required],
-      edificio: ['', Validators.required],
-      piso: ['', Validators.required],
-      lugar: ['', Validators.required],
+      nombre: ['', Validators.required],
+      codigo: ['', Validators.required],
       descripcion: [''],
     });
   }
@@ -79,13 +74,7 @@ export class UbicacionesComponent implements OnInit {
   }
 
   abrirCrear() {
-    this.formCrear.reset({
-      sede: '',
-      edificio: '',
-      piso: '',
-      lugar: '',
-      descripcion: '',
-    });
+    this.formCrear.reset({ nombre: '', codigo: '', descripcion: '' });
     this.creando.set(true);
   }
 
@@ -112,10 +101,8 @@ export class UbicacionesComponent implements OnInit {
   abrirEditar(item: any) {
     this.editando.set(item);
     this.formEditar.reset({
-      sede: item.sede,
-      edificio: item.edificio,
-      piso: item.piso,
-      lugar: item.lugar,
+      nombre: item.nombre,
+      codigo: item.codigo,
       descripcion: item.descripcion,
     });
   }
@@ -124,7 +111,7 @@ export class UbicacionesComponent implements OnInit {
     const actual = this.editando();
     if (!actual) return;
     const dto = this.formEditar.value;
-    this.api.update(actual.idUbicacion, dto).subscribe({
+    this.api.update(actual.id, dto).subscribe({
       next: () => {
         this.toast.success('Ubicación actualizada');
         this.editando.set(null);
@@ -132,14 +119,14 @@ export class UbicacionesComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        this.toast.error('No se pudo actualizar la ubicación');
+        this.toast.error('No se pudo actualizar');
       },
     });
   }
 
   eliminar(item: any) {
-    if (!confirm(`¿Eliminar la ubicación ${item.lugar}?`)) return;
-    this.api.delete(item.idUbicacion).subscribe({
+    if (!confirm(`¿Eliminar la ubicación ${item.nombre}?`)) return;
+    this.api.delete(item.id).subscribe({
       next: () => {
         this.toast.success('Ubicación eliminada');
         this.refrescar();
@@ -164,11 +151,14 @@ export class UbicacionesComponent implements OnInit {
   }
 
   trackById(index: number, item: any): number {
-    return item.idUbicacion;
-  }
+  return item.id;
+}
+
 
   onSearch(ev: Event) {
     const value = (ev.target as HTMLInputElement).value;
     this.q.set(value);
   }
+
+  
 }
