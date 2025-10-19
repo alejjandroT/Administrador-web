@@ -21,7 +21,7 @@ export const routes: Routes = [
       ),
     children: [
       {
-        path: 'inicio',
+        path: 'dashboard',
         loadComponent: () =>
           import('./features/dashboard/dashboard/dashboard.component').then(
             (m) => m.DashboardComponent
