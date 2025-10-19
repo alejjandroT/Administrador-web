@@ -1,1 +1,82 @@
-<p>dashboard works!</p>
+<div class="contenedor-dashboard">
+  <div class="acciones">
+    <button
+      (click)="cambiarVista('graficas')"
+      [class.activo]="vista === 'graficas'"
+    >
+      📊 Ver Gráficas
+    </button>
+    <button (click)="cambiarVista('tabla')" [class.activo]="vista === 'tabla'">
+      📋 Ver Tabla
+    </button>
+  </div>
+
+  <div *ngIf="cargando" class="loading">Cargando reportes...</div>
+  <div *ngIf="error" class="state error">{{ error }}</div>
+
+  <!-- GRÁFICAS -->
+  <div *ngIf="vista === 'graficas' && !cargando && !error" class="graficas">
+    <div class="graficas-grid">
+      <div class="card">
+        <h4>Reportes por mes</h4>
+        <div class="canvas-wrap"><canvas #chartMes></canvas></div>
+      </div>
+
+      <div class="card">
+        <h4>Reportes por sede</h4>
+        <div class="canvas-wrap"><canvas #chartSede></canvas></div>
+      </div>
+
+      <div class="card">
+        <h4>Reportes por estado</h4>
+        <div class="canvas-wrap"><canvas #chartEstado></canvas></div>
+      </div>
+
+      <div class="card">
+        <h4>Con o sin audio</h4>
+        <div class="canvas-wrap"><canvas #chartAudio></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div *ngIf="vista === 'tabla' && !cargando && !error" class="tabla-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuario</th>
+          <th>Correo</th>
+          <th>Sede</th>
+          <th>Edificio</th>
+          <th>Lugar</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Audio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of reportes">
+          <td>{{ r.idReporte }}</td>
+          <td>{{ r.usuario.nombre }}</td>
+          <td>{{ r.usuario.correo }}</td>
+          <td>{{ r.ubicacion.sede }}</td>
+          <td>{{ r.ubicacion.edificio }}</td>
+          <td>{{ r.ubicacion.lugar }}</td>
+          <td>{{ r.descripcion || "Sin descripción" }}</td>
+          <td>{{ r.estado }}</td>
+          <td>{{ r.fechaCreacion }}</td>
+          <td>{{ r.horaCreacion }}</td>
+          <td>
+            <button *ngIf="r.rutaAudio" (click)="reproducirAudio(r.idReporte)">
+              🔊 Escuchar
+            </button>
+            <span *ngIf="!r.rutaAudio">—</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
