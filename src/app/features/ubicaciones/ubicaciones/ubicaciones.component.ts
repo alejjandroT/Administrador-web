@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  signal,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -8,6 +15,9 @@ import {
 } from '@angular/forms';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
 import { ToastService } from '../../../shared/components/toast-container/toast-container/toast.service';
+import QRCode from 'qrcode';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-ubicaciones',
@@ -17,11 +27,15 @@ import { ToastService } from '../../../shared/components/toast-container/toast-c
   styleUrls: ['./ubicaciones.component.css'],
 })
 export class UbicacionesComponent implements OnInit {
+  @ViewChild('qrCanvas') qrCanvas!: ElementRef<HTMLCanvasElement>;
+
   cargando = false;
   lista = signal<any[]>([]);
   q = signal<string>('');
   creando = signal<boolean>(false);
   editando = signal<any | null>(null);
+  seleccionada = signal<any | null>(null);
+  seleccionados = signal<Set<number>>(new Set<number>());
 
   formCrear!: FormGroup;
   formEditar!: FormGroup;
@@ -132,7 +146,11 @@ export class UbicacionesComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        this.toast.error('No se pudo actualizar la ubicación');
+        const msg =
+          err.status === 500
+            ? 'No se pudo actualizar la ubicación. Verifica los datos.'
+            : 'Error inesperado al actualizar.';
+        this.toast.error(msg);
       },
     });
   }
@@ -146,21 +164,104 @@ export class UbicacionesComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        this.toast.error('No se pudo eliminar');
+        let msg = 'No se pudo eliminar la ubicación';
+        if (
+          err.status === 500 &&
+          err.error?.includes('FK_Reportes_Ubicaciones')
+        ) {
+          msg = 'No se puede eliminar porque tiene reportes asociados';
+        }
+        this.toast.error(msg);
       },
     });
+  }
+
+  seleccionar(u: any) {
+    this.seleccionada.set(u);
+    setTimeout(() => this.renderCanvas(u), 0);
+  }
+
+  toggleSeleccion(u: any, ev: Event) {
+    const set = new Set(this.seleccionados());
+    const checked = (ev.target as HTMLInputElement).checked;
+    if (checked) set.add(u.idUbicacion);
+    else set.delete(u.idUbicacion);
+    this.seleccionados.set(set);
+  }
+
+  toggleSeleccionTodos(ev: Event) {
+    const checked = (ev.target as HTMLInputElement).checked;
+    const set = new Set<number>();
+    if (checked) {
+      this.filtrados().forEach((u) => set.add(u.idUbicacion));
+    }
+    this.seleccionados.set(set);
+  }
+
+  estaSeleccionado(u: any): boolean {
+    return this.seleccionados().has(u.idUbicacion);
+  }
+
+  private qrPayload(u: any): string {
+    return `${location.origin}/scan?ubicacion=${encodeURIComponent(
+      u.idUbicacion
+    )}`;
+  }
+
+  private async renderCanvas(u: any) {
+    if (!this.qrCanvas) return;
+    const canvas = this.qrCanvas.nativeElement;
+    await QRCode.toCanvas(canvas, this.qrPayload(u), {
+      margin: 1,
+      width: 250,
+    });
+  }
+
+  descargarPNG() {
+    const u = this.seleccionada();
+    if (!u || !this.qrCanvas) return;
+    const canvas = this.qrCanvas.nativeElement;
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      saveAs(blob, `QR_${u.lugar}.png`);
+    });
+  }
+
+  async descargarZip() {
+    const ids = this.seleccionados();
+    if (!ids.size) {
+      this.toast.info('Selecciona al menos una ubicación.');
+      return;
+    }
+
+    const zip = new JSZip();
+    for (const u of this.lista()) {
+      if (!ids.has(u.idUbicacion)) continue;
+      const canvas = document.createElement('canvas');
+      await QRCode.toCanvas(canvas, this.qrPayload(u), {
+        margin: 1,
+        width: 512,
+      });
+      const blob: Blob | null = await new Promise((resolve) =>
+        canvas.toBlob(resolve)
+      );
+      if (blob) {
+        const arrayBuf = await blob.arrayBuffer();
+        zip.file(`QR_${u.lugar}.png`, arrayBuf);
+      }
+    }
+
+    const content = await zip.generateAsync({ type: 'blob' });
+    saveAs(
+      content,
+      `Ubicaciones_QR_${new Date().toISOString().slice(0, 10)}.zip`
+    );
+    this.toast.success('ZIP generado correctamente');
   }
 
   cerrarModal() {
     this.creando.set(false);
     this.editando.set(null);
-  }
-
-  get fC() {
-    return this.formCrear.controls;
-  }
-  get fE() {
-    return this.formEditar.controls;
   }
 
   trackById(index: number, item: any): number {

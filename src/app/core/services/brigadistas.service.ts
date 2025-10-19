@@ -5,21 +5,24 @@ import { API_URL } from '../tokens/api-url.token';
 
 export interface Brigadista {
   id: number;
-  nombre: string | null;
+  nombre?: string | null;
   correo: string;
+  contraseña?: string;
   esBrigadista: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
 export class BrigadistasService {
-  private base: string;
+  private baseAdmin: string;
+  private baseAuth: string;
 
   constructor(private http: HttpClient, @Inject(API_URL) api: string) {
-    this.base = `${api}/admin/usuarios`;
+    this.baseAdmin = `${api}/admin/usuarios`;
+    this.baseAuth = `${api}/auth/invitados`;
   }
 
   listar(): Observable<Brigadista[]> {
-    return this.http.get<any[]>(`${this.base}/usuarios`).pipe(
+    return this.http.get<any[]>(`${this.baseAdmin}/usuarios`).pipe(
       map((items) =>
         (items || []).map((it) => ({
           id: it.id ?? it.idUsuario ?? 0,
@@ -36,11 +39,23 @@ export class BrigadistasService {
     );
   }
 
-  crear(data: Omit<Brigadista, 'id'>): Observable<Brigadista> {
-    return this.http.post<Brigadista>(`${this.base}/`, data).pipe(
-      tap(() => console.log('🟢 Brigadista creado exitosamente')),
+  crear(data: Omit<Brigadista, 'id'>): Observable<any> {
+    return this.http
+      .post(`${this.baseAuth}/registro`, data, { responseType: 'text' })
+      .pipe(
+        tap(() => console.log('🟢 Brigadista creado exitosamente')),
+        catchError((err) => {
+          console.error('❌ Error al crear brigadista:', err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  actualizar(id: number, data: Partial<Brigadista>): Observable<void> {
+    return this.http.put<void>(`${this.baseAuth}/actualizar/${id}`, data).pipe(
+      tap(() => console.log(`🟢 Brigadista #${id} actualizado correctamente`)),
       catchError((err) => {
-        console.error('❌ Error al crear brigadista:', err);
+        console.error(`❌ Error al actualizar brigadista #${id}:`, err);
         return throwError(() => err);
       })
     );
@@ -49,7 +64,7 @@ export class BrigadistasService {
   asignarRolBrigadista(id: number): Observable<void> {
     return this.http
       .post(
-        `${this.base}/${id}/asignar-brigadista`,
+        `${this.baseAdmin}/${id}/asignar-brigadista`,
         {},
         { responseType: 'text' }
       )
@@ -59,10 +74,7 @@ export class BrigadistasService {
         ),
         map(() => void 0),
         catchError((err) => {
-          console.error(
-            `❌ Error al asignar rol de brigadista al usuario #${id}:`,
-            err
-          );
+          console.error(`❌ Error al asignar rol al usuario #${id}:`, err);
           return throwError(() => err);
         })
       );
@@ -71,20 +83,17 @@ export class BrigadistasService {
   quitarRolBrigadista(id: number): Observable<void> {
     return this.http
       .post(
-        `${this.base}/${id}/quitar-brigadista`,
+        `${this.baseAdmin}/${id}/quitar-brigadista`,
         {},
         { responseType: 'text' }
       )
       .pipe(
         tap(() =>
-          console.log(`🟢 Rol de brigadista quitado del usuario #${id}`)
+          console.log(`🟢 Rol de brigadista quitado al usuario #${id}`)
         ),
         map(() => void 0),
         catchError((err) => {
-          console.error(
-            `❌ Error al quitar rol de brigadista del usuario #${id}:`,
-            err
-          );
+          console.error(`❌ Error al quitar rol al usuario #${id}:`, err);
           return throwError(() => err);
         })
       );

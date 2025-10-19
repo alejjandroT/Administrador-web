@@ -2,45 +2,38 @@
 <div class="toolbar">
   <input
     type="text"
-    placeholder="Buscar brigadista…"
+    placeholder="Buscar usuario por correo"
     (input)="onSearch($event)"
   />
   <button class="btn primary" (click)="abrirCrear()">+ Nuevo</button>
 </div>
 
-<!-- Estados -->
 <div *ngIf="cargando" class="state muted">Cargando brigadistas…</div>
 <div *ngIf="!cargando && error" class="state error">{{ error }}</div>
 
-<!-- Tabla -->
 <div *ngIf="!cargando && !error">
   <table class="table" *ngIf="filtrados().length; else vacio">
     <thead>
       <tr>
-        <th>Nombre</th>
         <th>Correo</th>
         <th>Es Brigadista</th>
-        <!-- <th style="width: 220px">Acciones</th> -->
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let b of filtrados(); trackBy: trackById">
-        <td>{{ b.nombre }}</td>
         <td>{{ b.correo }}</td>
         <td>
-          <label class="switch">
-            <input
-              type="checkbox"
-              [checked]="b.esBrigadista"
-              (change)="onToggleBrigadista($event, b)"
-              aria-label="Toggle brigadista"
-            />
-            <span class="slider"></span>
-          </label>
+          <span
+            class="badge"
+            [class.ok]="b.esBrigadista"
+            [class.no]="!b.esBrigadista"
+          >
+            {{ b.esBrigadista ? "Sí" : "No" }}
+          </span>
         </td>
-        <!-- <td class="row-actions">
+        <td>
           <button class="btn ghost" (click)="abrirEditar(b)">Editar</button>
-        </td> -->
+        </td>
       </tr>
     </tbody>
   </table>
@@ -50,39 +43,22 @@
   </ng-template>
 </div>
 
-<!-- MODAL: Crear brigadista -->
+<!-- MODAL CREAR -->
 <div class="modal-backdrop" *ngIf="creando()" (click)="cerrarModal()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-head">
-      <h3>Nuevo brigadista</h3>
+      <h3>Registrar brigadista</h3>
       <button class="icon-close" (click)="cerrarModal()">✕</button>
     </div>
-
     <form class="modal-body grid" [formGroup]="formCrear" (ngSubmit)="crear()">
-      <div class="field">
-        <label>Nombre</label>
-        <input type="text" formControlName="nombre" />
-        <small
-          class="error"
-          *ngIf="
-            formCrear.get('nombre')?.touched && formCrear.get('nombre')?.invalid
-          "
-        >
-          El nombre es obligatorio
-        </small>
-      </div>
-
-      <div class="field">
+      <div class="field full">
         <label>Correo</label>
         <input type="email" formControlName="correo" />
-        <small
-          class="error"
-          *ngIf="
-            formCrear.get('correo')?.touched && formCrear.get('correo')?.invalid
-          "
-        >
-          Correo inválido
-        </small>
+      </div>
+
+      <div class="field full">
+        <label>Contraseña</label>
+        <input type="password" formControlName="contraseña" />
       </div>
 
       <div class="switch-row">
@@ -102,34 +78,34 @@
           class="btn primary"
           [disabled]="formCrear.invalid"
         >
-          Crear
+          Registrar
         </button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- MODAL: Editar brigadista -->
+<!-- MODAL EDITAR -->
 <div class="modal-backdrop" *ngIf="editando()" (click)="cerrarModal()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-head">
       <h3>Editar brigadista</h3>
       <button class="icon-close" (click)="cerrarModal()">✕</button>
     </div>
-
     <form
       class="modal-body grid"
       [formGroup]="formEditar"
       (ngSubmit)="actualizar()"
     >
-      <div class="field">
-        <label>Nombre</label>
-        <input type="text" formControlName="nombre" />
-      </div>
-
-      <div class="field">
+      <div class="field full">
         <label>Correo</label>
         <input type="email" formControlName="correo" />
+      </div>
+
+      <div class="field full">
+        <label>Nueva Contraseña</label>
+        <input type="password" formControlName="contraseña" />
+        <small class="muted">Déjala vacía si no deseas cambiarla</small>
       </div>
 
       <div class="switch-row">

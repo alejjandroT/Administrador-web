@@ -24,10 +24,10 @@ export class UbicacionesService {
   }
 
   update(id: number, dto: any): Observable<any> {
-    return this.http.put<any>(`${this.base}/${id}`, dto);
+    return this.http.put(`${this.base}/${id}`, dto, { responseType: 'text' });
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/${id}`);
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${this.base}/${id}`, { responseType: 'text' });
   }
 }

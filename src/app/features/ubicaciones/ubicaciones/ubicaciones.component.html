@@ -1,38 +1,83 @@
-<!-- Botón para abrir -->
-<button class="btn" (click)="abrirCrear()">+ Nueva ubicación</button>
+<div class="actions-row">
+  <button class="btn" (click)="abrirCrear()">+ Nueva ubicación</button>
+  <button class="btn primary" (click)="descargarZip()">
+    Exportar seleccionados (ZIP)
+  </button>
+</div>
 
-<!-- Buscador -->
 <div class="search-row">
   <input
     type="text"
-    placeholder="Buscar por nombre o código..."
+    placeholder="Buscar ubicación..."
     (input)="onSearch($event)"
   />
 </div>
 
-<!-- Tabla -->
-<table class="table">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Código</th>
-      <th>Descripción</th>
-      <th style="width: 160px">Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let u of filtrados(); trackBy: trackById">
-      <td>{{ u.nombre }}</td>
-      <td>{{ u.codigo }}</td>
-      <td>{{ u.descripcion }}</td>
-      <td>
-        <button class="btn-sm" (click)="abrirEditar(u)">Editar</button>
-        <button class="btn-sm danger" (click)="eliminar(u)">Eliminar</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<div class="content-grid">
+  <div class="table-zone">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            <input type="checkbox" (change)="toggleSeleccionTodos($event)" />
+          </th>
+          <th>Id</th>
+          <th>Sede</th>
+          <th>Edificio</th>
+          <th>Piso</th>
+          <th>Lugar</th>
+          <th>Descripción</th>
+          <th style="width: 160px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let u of filtrados(); trackBy: trackById"
+          (click)="seleccionar(u)"
+          [class.selected]="seleccionada()?.idUbicacion === u.idUbicacion"
+          class="row-hover"
+        >
+          <td>
+            <input
+              type="checkbox"
+              [checked]="estaSeleccionado(u)"
+              (change)="toggleSeleccion(u, $event)"
+              (click)="$event.stopPropagation()"
+            />
+          </td>
+          <td>{{ u.idUbicacion }}</td>
+          <td>{{ u.sede }}</td>
+          <td>{{ u.edificio }}</td>
+          <td>{{ u.piso }}</td>
+          <td>{{ u.lugar }}</td>
+          <td>{{ u.descripcion }}</td>
+          <td>
+            <button
+              class="btn-sm"
+              (click)="abrirEditar(u); $event.stopPropagation()"
+            >
+              Editar
+            </button>
+            <button
+              class="btn-sm danger"
+              (click)="eliminar(u); $event.stopPropagation()"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
+  <div class="qr-preview" *ngIf="seleccionada()">
+    <h3>QR de {{ seleccionada()?.lugar }}</h3>
+    <canvas #qrCanvas></canvas>
+    <button class="btn primary" (click)="descargarPNG()">Descargar PNG</button>
+  </div>
+</div>
+
+<!-- Modal -->
 <div
   class="modal-backdrop"
   [class.open]="creando() || !!editando()"
@@ -49,13 +94,23 @@
       class="modal-form"
     >
       <div class="form-row">
-        <label>Nombre</label>
-        <input type="text" formControlName="nombre" />
+        <label>Sede</label>
+        <input type="text" formControlName="sede" />
       </div>
 
       <div class="form-row">
-        <label>Código</label>
-        <input type="text" formControlName="codigo" />
+        <label>Edificio</label>
+        <input type="text" formControlName="edificio" />
+      </div>
+
+      <div class="form-row">
+        <label>Piso</label>
+        <input type="text" formControlName="piso" />
+      </div>
+
+      <div class="form-row">
+        <label>Lugar</label>
+        <input type="text" formControlName="lugar" />
       </div>
 
       <div class="form-row">

@@ -29,7 +29,6 @@ export class BrigadistasComponent implements OnInit {
   formCrear!: FormGroup;
   formEditar!: FormGroup;
 
-  // Filtro (signal computado)
   filtrados = computed(() => {
     const term = this.q().trim().toLowerCase();
     if (!term) return this.lista();
@@ -42,17 +41,15 @@ export class BrigadistasComponent implements OnInit {
 
   constructor(private api: BrigadistasService, private fb: FormBuilder) {
     this.formCrear = this.fb.group({
-      nombre: ['', [Validators.required]],
       correo: ['', [Validators.required, Validators.email]],
-      telefono: [''],
-      esBrigadista: [true],
+      contraseña: ['', [Validators.required]],
+      esBrigadista: [false],
     });
 
     this.formEditar = this.fb.group({
-      nombre: ['', [Validators.required]],
       correo: ['', [Validators.required, Validators.email]],
-      telefono: [''],
-      esBrigadista: [true],
+      contraseña: [''],
+      esBrigadista: [false],
     });
   }
 
@@ -65,7 +62,6 @@ export class BrigadistasComponent implements OnInit {
     this.q.set(value);
   }
 
-  // --- CRUD ---
   refrescar() {
     this.cargando = true;
     this.error = '';
@@ -84,13 +80,13 @@ export class BrigadistasComponent implements OnInit {
 
   abrirCrear() {
     this.formCrear.reset({
-      nombre: '',
       correo: '',
-      telefono: '',
-      esBrigadista: true,
+      contraseña: '',
+      esBrigadista: false,
     });
     this.creando.set(true);
   }
+
   crear() {
     if (this.formCrear.invalid) {
       this.formCrear.markAllAsTouched();
@@ -104,7 +100,7 @@ export class BrigadistasComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        this.error = 'No se pudo crear.';
+        this.error = 'No se pudo crear el brigadista.';
       },
     });
   }
@@ -112,9 +108,9 @@ export class BrigadistasComponent implements OnInit {
   abrirEditar(item: Brigadista) {
     this.editando.set(item);
     this.formEditar.reset({
-      nombre: item.nombre ?? '',
       correo: item.correo ?? '',
-      esBrigadista: item.esBrigadista ?? true,
+      contraseña: '',
+      esBrigadista: item.esBrigadista ?? false,
     });
   }
 
@@ -126,92 +122,17 @@ export class BrigadistasComponent implements OnInit {
       return;
     }
 
-    const raw = this.formEditar.value;
-    const nuevoEsBrig = Boolean(raw.esBrigadista ?? true);
-    const previoEsBrig = Boolean(current.esBrigadista ?? false);
-
-    if (!previoEsBrig && nuevoEsBrig) {
-      this.api.asignarRolBrigadista(current.id).subscribe({
-        next: () => {
-          this.cerrarModal();
-          this.refrescar();
-        },
-        error: (err) => {
-          console.error(err);
-          this.error = 'No se pudo asignar el rol de brigadista.';
-        },
-      });
-      return;
-    }
-
-    if (previoEsBrig && !nuevoEsBrig) {
-      this.api.quitarRolBrigadista(current.id).subscribe({
-        next: () => {
-          this.cerrarModal();
-          this.refrescar();
-        },
-        error: (err) => {
-          console.error(err);
-          this.error = 'No se pudo quitar el rol de brigadista.';
-        },
-      });
-      return;
-    }
-
-    this.cerrarModal();
-    this.refrescar();
-  }
-
-  // Métodos para asignar/quitar directamente desde la lista (ej. botones rápidos)
-  asignarRol(item: Brigadista) {
-    if (!confirm(`¿Asignar rol de brigadista a ${item.correo}?`)) return;
-    this.api.asignarRolBrigadista(item.id).subscribe({
-      next: () => this.refrescar(),
+    const payload = this.formEditar.value;
+    this.api.actualizar(current.id, payload).subscribe({
+      next: () => {
+        this.cerrarModal();
+        this.refrescar();
+      },
       error: (err) => {
         console.error(err);
-        this.error = 'No se pudo asignar el rol.';
+        this.error = 'No se pudo actualizar el brigadista.';
       },
     });
-  }
-
-  quitarRol(item: Brigadista) {
-    if (!confirm(`¿Quitar rol de brigadista a ${item.correo}?`)) return;
-    this.api.quitarRolBrigadista(item.id).subscribe({
-      next: () => this.refrescar(),
-      error: (err) => {
-        console.error(err);
-        this.error = 'No se pudo quitar el rol.';
-      },
-    });
-  }
-
-  /**
-   * Handler tipo-B: recibe el evento del checkbox (change) y el item.
-   * Usa ev.target como HTMLInputElement con chequeo de null seguro.
-   * Llama a los endpoints correspondientes y refresca la lista.
-   */
-  onToggleBrigadista(ev: Event, item: Brigadista) {
-    const input = ev.target as HTMLInputElement | null;
-    if (!input) return;
-
-    // Si quedó checked -> asignar, si no -> quitar
-    if (input.checked) {
-      this.api.asignarRolBrigadista(item.id).subscribe({
-        next: () => this.refrescar(),
-        error: (err) => {
-          console.error(err);
-          this.error = 'No se pudo asignar el rol de brigadista.';
-        },
-      });
-    } else {
-      this.api.quitarRolBrigadista(item.id).subscribe({
-        next: () => this.refrescar(),
-        error: (err) => {
-          console.error(err);
-          this.error = 'No se pudo quitar el rol de brigadista.';
-        },
-      });
-    }
   }
 
   cerrarModal() {
@@ -219,7 +140,6 @@ export class BrigadistasComponent implements OnInit {
     this.editando.set(null);
   }
 
-  // Helpers de template
   get fC() {
     return this.formCrear.controls;
   }
