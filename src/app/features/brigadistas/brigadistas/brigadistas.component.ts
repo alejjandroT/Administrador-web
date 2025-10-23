@@ -41,13 +41,13 @@ export class BrigadistasComponent implements OnInit {
 
   constructor(private api: BrigadistasService, private fb: FormBuilder) {
     this.formCrear = this.fb.group({
-      correo: ['', [Validators.required, Validators.email]],
+      correo: ['', [Validators.required, Validators.pattern(/^[^@]+$/)]],
       contraseña: ['', [Validators.required]],
       esBrigadista: [false],
     });
 
     this.formEditar = this.fb.group({
-      correo: ['', [Validators.required, Validators.email]],
+      correo: ['', [Validators.required, Validators.pattern(/^[^@]+$/)]],
       contraseña: [''],
       esBrigadista: [false],
     });
@@ -92,25 +92,28 @@ export class BrigadistasComponent implements OnInit {
       this.formCrear.markAllAsTouched();
       return;
     }
-    const payload = this.formCrear.value as Omit<Brigadista, 'id'>;
+
+    const username = this.formCrear.value.correo.trim().replace(/@.*/, '');
+    const payload = {
+      ...this.formCrear.value,
+      correo: `${username}@unimayor.invitado.edu.co`,
+      esBrigadista: false, // 👈 Fuerza a falso
+    } as Omit<Brigadista, 'id'>;
+
     this.api.crear(payload).subscribe({
       next: () => {
+        console.log('✅ Brigadista creado correctamente');
+        const actual = this.lista();
+        const ultimoId =
+          actual.length > 0 ? Math.max(...actual.map((b) => b.id)) : 0;
+        const nuevo: Brigadista = { id: ultimoId + 1, ...payload };
+        this.lista.set([...actual, nuevo]);
         this.cerrarModal();
-        this.refrescar();
       },
       error: (err) => {
         console.error(err);
         this.error = 'No se pudo crear el brigadista.';
       },
-    });
-  }
-
-  abrirEditar(item: Brigadista) {
-    this.editando.set(item);
-    this.formEditar.reset({
-      correo: item.correo ?? '',
-      contraseña: '',
-      esBrigadista: item.esBrigadista ?? false,
     });
   }
 
@@ -122,16 +125,36 @@ export class BrigadistasComponent implements OnInit {
       return;
     }
 
-    const payload = this.formEditar.value;
+    const username = this.formEditar.value.correo.trim().replace(/@.*/, '');
+    const payload = {
+      ...this.formEditar.value,
+      correo: `${username}@unimayor.invitado.edu.co`,
+      esBrigadista: false, // 👈 Fuerza a falso
+    };
+
     this.api.actualizar(current.id, payload).subscribe({
       next: () => {
-        this.cerrarModal();
+        console.log('✅ Brigadista actualizado correctamente');
         this.refrescar();
+        this.cerrarModal();
       },
       error: (err) => {
         console.error(err);
         this.error = 'No se pudo actualizar el brigadista.';
       },
+    });
+  }
+
+  abrirEditar(item: Brigadista) {
+    this.editando.set(item);
+    const baseCorreo = (item.correo ?? '').replace(
+      '@unimayor.invitado.edu.co',
+      ''
+    );
+    this.formEditar.reset({
+      correo: baseCorreo,
+      contraseña: '',
+      esBrigadista: item.esBrigadista ?? false,
     });
   }
 
@@ -149,5 +172,38 @@ export class BrigadistasComponent implements OnInit {
 
   trackById(index: number, item: Brigadista) {
     return item.id;
+  }
+
+  cambiarRol(item: Brigadista) {
+    const nuevoEstado = !item.esBrigadista;
+    item.esBrigadista = nuevoEstado;
+
+    const accion = nuevoEstado
+      ? this.api.asignarRolBrigadista(item.id)
+      : this.api.quitarRolBrigadista(item.id);
+
+    accion.subscribe({
+      next: () => {
+        console.log(
+          `✅ Usuario #${item.id} ahora ${
+            nuevoEstado ? 'ES' : 'NO ES'
+          } brigadista`
+        );
+        const actual = this.lista().map((b) =>
+          b.id === item.id ? { ...b, esBrigadista: nuevoEstado } : b
+        );
+        this.lista.set(actual);
+      },
+      error: (err) => {
+        console.error('❌ Error al cambiar el rol:', err);
+        item.esBrigadista = !nuevoEstado;
+      },
+    });
+  }
+
+  limpiarCorreo(event: Event, form: FormGroup) {
+    const input = event.target as HTMLInputElement;
+    const valor = input.value.replace(/@.*/g, '');
+    form.get('correo')?.setValue(valor, { emitEvent: false });
   }
 }

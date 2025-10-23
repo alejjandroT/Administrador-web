@@ -24,11 +24,12 @@ export interface Reporte {
 @Injectable({
   providedIn: 'root',
 })
-export class ServicesService {
+export class ReportsService {
   private baseUrl: string;
 
   constructor(private http: HttpClient, @Inject(API_URL) private api: string) {
-    this.baseUrl = `${this.api}/reportes`;
+
+    this.baseUrl = `${this.api}/admin/reportes`;
   }
 
   obtenerReportes(): Observable<Reporte[]> {

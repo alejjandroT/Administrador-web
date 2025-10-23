@@ -71,7 +71,11 @@
   </div>
 
   <div class="qr-preview" *ngIf="seleccionada()">
-    <h3>QR de {{ seleccionada()?.lugar }}</h3>
+    <h3>
+      QR - {{ seleccionada()?.sede }} Edificio
+      {{ seleccionada()?.edificio }} Piso {{ seleccionada()?.piso }}
+      {{ seleccionada()?.lugar }}
+    </h3>
     <canvas #qrCanvas></canvas>
     <button class="btn primary" (click)="descargarPNG()">Descargar PNG</button>
   </div>

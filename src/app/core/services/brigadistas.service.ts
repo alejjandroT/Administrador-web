@@ -51,14 +51,18 @@ export class BrigadistasService {
       );
   }
 
-  actualizar(id: number, data: Partial<Brigadista>): Observable<void> {
-    return this.http.put<void>(`${this.baseAuth}/actualizar/${id}`, data).pipe(
-      tap(() => console.log(`🟢 Brigadista #${id} actualizado correctamente`)),
-      catchError((err) => {
-        console.error(`❌ Error al actualizar brigadista #${id}:`, err);
-        return throwError(() => err);
-      })
-    );
+  actualizar(id: number, data: Partial<Brigadista>): Observable<any> {
+    return this.http
+      .put(`${this.baseAuth}/actualizar/${id}`, data, { responseType: 'text' })
+      .pipe(
+        tap(() =>
+          console.log(`🟢 Brigadista #${id} actualizado correctamente`)
+        ),
+        catchError((err) => {
+          console.error(`❌ Error al actualizar brigadista #${id}:`, err);
+          return throwError(() => err);
+        })
+      );
   }
 
   asignarRolBrigadista(id: number): Observable<void> {

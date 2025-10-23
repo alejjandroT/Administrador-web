@@ -17,8 +17,11 @@
       <tr>
         <th>Correo</th>
         <th>Es Brigadista</th>
+        <th>Cambiar Rol</th>
+        <th>Acciones</th>
       </tr>
     </thead>
+
     <tbody>
       <tr *ngFor="let b of filtrados(); trackBy: trackById">
         <td>{{ b.correo }}</td>
@@ -32,7 +35,31 @@
           </span>
         </td>
         <td>
-          <button class="btn ghost" (click)="abrirEditar(b)">Editar</button>
+          <ng-container
+            *ngIf="b.correo.endsWith('@unimayor.edu.co'); else noRol"
+          >
+            <label class="switch">
+              <input
+                type="checkbox"
+                [checked]="b.esBrigadista"
+                (change)="cambiarRol(b)"
+              />
+              <span class="slider"></span>
+            </label>
+          </ng-container>
+          <ng-template #noRol>
+            <span class="muted">—</span>
+          </ng-template>
+        </td>
+        <td>
+          <ng-container
+            *ngIf="!b.correo.endsWith('@unimayor.edu.co'); else sinEditar"
+          >
+            <button class="btn ghost" (click)="abrirEditar(b)">Editar</button>
+          </ng-container>
+          <ng-template #sinEditar>
+            <span class="muted">—</span>
+          </ng-template>
         </td>
       </tr>
     </tbody>
@@ -51,22 +78,36 @@
       <button class="icon-close" (click)="cerrarModal()">✕</button>
     </div>
     <form class="modal-body grid" [formGroup]="formCrear" (ngSubmit)="crear()">
-      <div class="field full">
+      <div class="field full email-wrapper">
         <label>Correo</label>
-        <input type="email" formControlName="correo" />
+        <div class="email-input">
+          <input
+            type="text"
+            formControlName="correo"
+            placeholder="usuario"
+            (input)="limpiarCorreo($event, formCrear)"
+            *ngIf="creando()"
+          />
+          <input
+            type="text"
+            formControlName="correo"
+            placeholder="usuario"
+            (input)="limpiarCorreo($event, formEditar)"
+            *ngIf="editando()"
+          />
+          <span class="domain">&#64;unimayor.invitado.edu.co</span>
+        </div>
       </div>
 
-      <div class="field full">
+      <div class="field full password-wrapper">
         <label>Contraseña</label>
-        <input type="password" formControlName="contraseña" />
-      </div>
-
-      <div class="switch-row">
-        <label class="switch">
-          <input type="checkbox" formControlName="esBrigadista" />
-          <span class="slider"></span>
-        </label>
-        <span>Es brigadista</span>
+        <div class="password-input">
+          <input
+            type="password"
+            formControlName="contraseña"
+            placeholder="••••••••"
+          />
+        </div>
       </div>
 
       <div class="modal-actions">
@@ -97,23 +138,36 @@
       [formGroup]="formEditar"
       (ngSubmit)="actualizar()"
     >
-      <div class="field full">
+      <div class="field full email-wrapper">
         <label>Correo</label>
-        <input type="email" formControlName="correo" />
+        <div class="email-input">
+          <input
+            type="text"
+            formControlName="correo"
+            placeholder="usuario"
+            (input)="limpiarCorreo($event, formCrear)"
+            *ngIf="creando()"
+          />
+          <input
+            type="text"
+            formControlName="correo"
+            placeholder="usuario"
+            (input)="limpiarCorreo($event, formEditar)"
+            *ngIf="editando()"
+          />
+          <span class="domain">&#64;unimayor.invitado.edu.co</span>
+        </div>
       </div>
 
-      <div class="field full">
-        <label>Nueva Contraseña</label>
-        <input type="password" formControlName="contraseña" />
-        <small class="muted">Déjala vacía si no deseas cambiarla</small>
-      </div>
-
-      <div class="switch-row">
-        <label class="switch">
-          <input type="checkbox" formControlName="esBrigadista" />
-          <span class="slider"></span>
-        </label>
-        <span>Es brigadista</span>
+      <div class="field full password-wrapper">
+        <label>Contraseña</label>
+        <div class="password-input">
+          <input
+            type="password"
+            formControlName="contraseña"
+            placeholder="••••••••"
+          />
+        </div>
       </div>
 
       <div class="modal-actions">

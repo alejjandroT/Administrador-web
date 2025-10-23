@@ -11,9 +11,9 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import { CommonModule } from '@angular/common';
 import {
-  ServicesService,
   Reporte,
-} from '../../../core/services/services.service';
+  ReportsService,
+} from '../../../core/services/reports.service';
 
 Chart.register(...registerables, ChartDataLabels);
 
@@ -41,7 +41,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private chartEstado?: Chart | null = null;
   private chartAudio?: Chart | null = null;
 
-  constructor(private api: ServicesService) {}
+  constructor(private api: ReportsService) {}
 
   ngOnInit(): void {
     this.cargarReportes();
@@ -66,7 +66,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       // pequeña espera para asegurar que ViewChild esté resuelto
       setTimeout(() => this.generarGraficas(), 0);
     } else {
-      // destruye para ahorrar memoria
       this.destroyAllCharts();
     }
   }

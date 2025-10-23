@@ -203,9 +203,7 @@ export class UbicacionesComponent implements OnInit {
   }
 
   private qrPayload(u: any): string {
-    return `${location.origin}/scan?ubicacion=${encodeURIComponent(
-      u.idUbicacion
-    )}`;
+    return `${encodeURIComponent(u.idUbicacion)}`;
   }
 
   private async renderCanvas(u: any) {
@@ -223,7 +221,10 @@ export class UbicacionesComponent implements OnInit {
     const canvas = this.qrCanvas.nativeElement;
     canvas.toBlob((blob) => {
       if (!blob) return;
-      saveAs(blob, `QR_${u.lugar}.png`);
+      saveAs(
+        blob,
+        `QR_${u.sede}_Edificio_${u.edificio}_Piso_${u.piso}_${u.lugar}.png`
+      );
     });
   }
 
