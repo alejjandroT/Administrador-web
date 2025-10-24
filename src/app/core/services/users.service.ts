@@ -12,7 +12,7 @@ export interface Brigadista {
 }
 
 @Injectable({ providedIn: 'root' })
-export class BrigadistasService {
+export class UsersService {
   private baseAdmin: string;
   private baseAuth: string;
 
@@ -98,6 +98,40 @@ export class BrigadistasService {
         map(() => void 0),
         catchError((err) => {
           console.error(`❌ Error al quitar rol al usuario #${id}:`, err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  banearUsuario(id: number): Observable<void> {
+    return this.http
+      .post(
+        `${this.baseAdmin}/${id}/inhabilitar-usuario`,
+        {},
+        { responseType: 'text' }
+      )
+      .pipe(
+        tap(() => console.log(`🟠 Usuario #${id} baneado`)),
+        map(() => void 0),
+        catchError((err) => {
+          console.error(`❌ Error al banear usuario #${id}:`, err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  desbanearUsuario(id: number): Observable<void> {
+    return this.http
+      .post(
+        `${this.baseAdmin}/${id}/habilitar-usuario`,
+        {},
+        { responseType: 'text' }
+      )
+      .pipe(
+        tap(() => console.log(`🟢 Usuario #${id} desbaneado`)),
+        map(() => void 0),
+        catchError((err) => {
+          console.error(`❌ Error al desbanear usuario #${id}:`, err);
           return throwError(() => err);
         })
       );

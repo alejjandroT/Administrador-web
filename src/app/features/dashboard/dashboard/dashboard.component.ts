@@ -35,7 +35,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   cargando = false;
   error = '';
 
-  // guardamos instancias para destruirlas
   private chartMes?: Chart | null = null;
   private chartSede?: Chart | null = null;
   private chartEstado?: Chart | null = null;
@@ -48,9 +47,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    // Si los datos ya llegaron antes del AfterViewInit, generamos graficas ahora
     if (this.reportes.length && this.vista === 'graficas') {
-      // pequeño delay para asegurarnos DOM listo
       setTimeout(() => this.generarGraficas(), 0);
     }
   }
@@ -62,8 +59,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   cambiarVista(vista: 'tabla' | 'graficas') {
     this.vista = vista;
     if (vista === 'graficas') {
-      // generamos graficas cuando el usuario cambia a la vista de gráficas
-      // pequeña espera para asegurar que ViewChild esté resuelto
       setTimeout(() => this.generarGraficas(), 0);
     } else {
       this.destroyAllCharts();
@@ -77,7 +72,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (data) => {
         this.reportes = data || [];
         this.cargando = false;
-        // Si estamos en la vista de graficas y ya existen los canvas -> generar
         if (this.vista === 'graficas') {
           setTimeout(() => this.generarGraficas(), 0);
         }
@@ -92,7 +86,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ---------------- Grafica principal (orquestador) ----------------
   generarGraficas() {
-    // chequeo básico: que los elementos ViewChild estén disponibles
     if (
       !this.chartMesRef ||
       !this.chartSedeRef ||
@@ -104,7 +97,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // primero destruimos las instancias previas para evitar errores
     this.destroyAllCharts();
 
     try {
@@ -117,14 +109,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- Creadores individuales de gráficas ----------
   private generarGraficaPorMes() {
     const canvas = this.chartMesRef.nativeElement;
     if (!canvas) return;
 
     const porMes: Record<string, number> = {};
     for (const r of this.reportes) {
-      // fechaCreacion viene como string 'YYYY-MM-DD' en tu JSON
       const d = r.fechaCreacion ? new Date(r.fechaCreacion) : null;
       const mes = d
         ? d.toLocaleString('es-CO', { month: 'long' })
@@ -159,7 +149,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
               weight: 'bold',
               size: 14,
             },
-            formatter: (value) => value, // muestra el número
+            formatter: (value) => value,
           },
           legend: {
             position: 'top',
@@ -207,7 +197,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
               weight: 'bold',
               size: 14,
             },
-            formatter: (value) => value, // muestra el número
+            formatter: (value) => value,
           },
           legend: {
             position: 'top',
@@ -316,7 +306,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.chartAudio = new Chart(canvas, cfg);
   }
 
-  // ---------- Helpers ----------
   private destroyChart(chart?: Chart | null) {
     try {
       if (chart) {
@@ -339,7 +328,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.chartAudio = null;
   }
 
-  // color generator simple
   private pickColor(index: number) {
     const palette = [
       'rgba(255,99,132,0.6)',

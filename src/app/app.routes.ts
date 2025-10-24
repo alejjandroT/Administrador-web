@@ -28,11 +28,11 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'brigadistas',
+        path: 'users',
         loadComponent: () =>
-          import(
-            './features/brigadistas/brigadistas/brigadistas.component'
-          ).then((m) => m.BrigadistasComponent),
+          import('./features/users/users/users.component').then(
+            (m) => m.UsersComponents
+          ),
       },
       {
         path: 'ubicaciones',

@@ -6,19 +6,16 @@ import {
   Validators,
   FormGroup,
 } from '@angular/forms';
-import {
-  BrigadistasService,
-  Brigadista,
-} from '../../../core/services/brigadistas.service';
+import { Brigadista, UsersService } from '../../../core/services/users.service';
 
 @Component({
   selector: 'app-brigadistas',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './brigadistas.component.html',
-  styleUrls: ['./brigadistas.component.css'],
+  templateUrl: './users.component.html',
+  styleUrls: ['./users.component.css'],
 })
-export class BrigadistasComponent implements OnInit {
+export class UsersComponents implements OnInit {
   cargando = false;
   error = '';
   lista = signal<Brigadista[]>([]);
@@ -39,7 +36,7 @@ export class BrigadistasComponent implements OnInit {
     );
   });
 
-  constructor(private api: BrigadistasService, private fb: FormBuilder) {
+  constructor(private api: UsersService, private fb: FormBuilder) {
     this.formCrear = this.fb.group({
       correo: ['', [Validators.required, Validators.pattern(/^[^@]+$/)]],
       contraseña: ['', [Validators.required]],
