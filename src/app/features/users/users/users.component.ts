@@ -94,7 +94,7 @@ export class UsersComponents implements OnInit {
     const payload = {
       ...this.formCrear.value,
       correo: `${username}@unimayor.invitado.edu.co`,
-      esBrigadista: false, // 👈 Fuerza a falso
+      esBrigadista: false,
     } as Omit<Brigadista, 'id'>;
 
     this.api.crear(payload).subscribe({
@@ -126,7 +126,7 @@ export class UsersComponents implements OnInit {
     const payload = {
       ...this.formEditar.value,
       correo: `${username}@unimayor.invitado.edu.co`,
-      esBrigadista: false, // 👈 Fuerza a falso
+      esBrigadista: false,
     };
 
     this.api.actualizar(current.id, payload).subscribe({
@@ -194,6 +194,32 @@ export class UsersComponents implements OnInit {
       error: (err) => {
         console.error('❌ Error al cambiar el rol:', err);
         item.esBrigadista = !nuevoEstado;
+      },
+    });
+  }
+
+  toggleBan(item: Brigadista) {
+    const nuevoEstado = !item.habilitado;
+
+    const accion = nuevoEstado
+      ? this.api.desbanearUsuario(item.id)
+      : this.api.banearUsuario(item.id);
+
+    accion.subscribe({
+      next: () => {
+        console.log(
+          `✅ Usuario #${item.id} ${
+            nuevoEstado ? 'habilitado' : 'baneado'
+          } correctamente`
+        );
+        const actual = this.lista().map((b) =>
+          b.id === item.id ? { ...b, habilitado: nuevoEstado } : b
+        );
+        this.lista.set(actual);
+      },
+      error: (err) => {
+        console.error('❌ Error al cambiar estado de baneo:', err);
+        item.habilitado = !nuevoEstado;
       },
     });
   }

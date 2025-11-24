@@ -9,6 +9,7 @@ export interface Brigadista {
   correo: string;
   contraseña?: string;
   esBrigadista: boolean;
+  habilitado: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -28,7 +29,8 @@ export class UsersService {
           id: it.id ?? it.idUsuario ?? 0,
           nombre: it.nombre ?? it.nombreUsuario ?? null,
           correo: it.correo ?? it.email ?? '',
-          esBrigadista: Boolean(it.esBrigadista ?? it.es_brigadista ?? false),
+          habilitado: Boolean(it.habilitado ?? false),
+          esBrigadista: Boolean(it.esBrigadista ?? false),
         }))
       ),
       tap(() => console.log('🟢 Listando brigadistas...')),

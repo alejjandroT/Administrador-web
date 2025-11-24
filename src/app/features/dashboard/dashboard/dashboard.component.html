@@ -14,7 +14,6 @@
   <div *ngIf="cargando" class="loading">Cargando reportes...</div>
   <div *ngIf="error" class="state error">{{ error }}</div>
 
-  <!-- GRÁFICAS -->
   <div *ngIf="vista === 'graficas' && !cargando && !error" class="graficas">
     <div class="graficas-grid">
       <div class="card">
@@ -39,7 +38,6 @@
     </div>
   </div>
 
-  <!-- TABLA -->
   <div *ngIf="vista === 'tabla' && !cargando && !error" class="tabla-container">
     <table>
       <thead>
@@ -50,6 +48,8 @@
           <th>Sede</th>
           <th>Edificio</th>
           <th>Lugar</th>
+          <th>Ubicación Opcional</th>
+          <th>Detalles Finalización</th>
           <th>Descripción</th>
           <th>Estado</th>
           <th>Fecha</th>
@@ -60,11 +60,13 @@
       <tbody>
         <tr *ngFor="let r of reportes">
           <td>{{ r.idReporte }}</td>
-          <td>{{ r.usuario.nombre }}</td>
+          <td>{{ r.usuario.nombre || "Invitado" }}</td>
           <td>{{ r.usuario.correo }}</td>
-          <td>{{ r.ubicacion.sede }}</td>
-          <td>{{ r.ubicacion.edificio }}</td>
-          <td>{{ r.ubicacion.lugar }}</td>
+          <td>{{ r.ubicacion?.sede || "—" }}</td>
+          <td>{{ r.ubicacion?.edificio || "—" }}</td>
+          <td>{{ r.ubicacion?.lugar || "—" }}</td>
+          <td>{{ r.ubicacionTextOpcional || "—" }}</td>
+          <td>{{ r.detallesFinalizacion || "—" }}</td>
           <td>{{ r.descripcion || "Sin descripción" }}</td>
           <td>{{ r.estado }}</td>
           <td>{{ r.fechaCreacion }}</td>

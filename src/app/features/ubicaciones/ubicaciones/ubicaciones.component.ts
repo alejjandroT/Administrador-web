@@ -203,7 +203,7 @@ export class UbicacionesComponent implements OnInit {
   }
 
   private qrPayload(u: any): string {
-    return `${encodeURIComponent(u.idUbicacion)}`;
+    return `reportes_unimayor_ubicación_oficial:${encodeURIComponent(u.idUbicacion)}`;
   }
 
   private async renderCanvas(u: any) {
