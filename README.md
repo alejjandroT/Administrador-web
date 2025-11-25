@@ -48,9 +48,9 @@ Sigue estos pasos para replicar el entorno de desarrollo y ejecutar el proyecto 
 
 ### Pasos para Replicar
 
-1.  **Clonar el repositorio** (o hacer `git pull` si ya lo tienes):
+1.  **Clonar el repositorio**:
     ```bash
-    git pull origin dev_johan
+    git clone https://github.com/alejjandroT/Administrador-web.git
     ```
 
 2.  **Instalar dependencias**:
